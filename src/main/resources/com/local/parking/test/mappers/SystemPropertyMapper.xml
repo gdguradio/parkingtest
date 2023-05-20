@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN'
+        'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+
+<mapper namespace="com.local.parking.test.mappers.SystemPropertyMapper">
+
+    <select id="selectByEntryPoint" parameterType="String" resultType="com.local.parking.test.system.property.SystemProperty">
+        SELECT
+            value,
+            code
+        FROM
+            systemproperty
+        WHERE
+            code = 'parking-slot'
+          AND status = 'active'
+          AND value NOT IN (SELECT CONCAT(location, ',', size) FROM parking WHERE status = 'active')
+          AND  (
+                CASE
+                WHEN #{vehicleType} = 'LP' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(value, ',', -1), ',', -1) IN ('LP')
+                WHEN #{vehicleType} = 'MP' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(value, ',', -1), ',', -1) IN ('MP','LP')
+                ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(value, ',', -1), ',', -1) IN ('SP','MP','LP')
+                END
+            )
+        ORDER BY
+            ABS(SUBSTRING_INDEX(SUBSTRING_INDEX(value, ',', #{entryPoint}), ',', -1) - 0)
+            LIMIT 1;
+    </select>
+
+
+    <select id="selectByCode" resultType="com.local.parking.test.system.property.SystemProperty">
+        SELECT *
+        FROM systemproperty
+        WHERE code = #{code}
+        AND status = 'active'
+    </select>
+
+    <select id="selectByCodeAndStatus" resultType="com.local.parking.test.system.property.SystemProperty">
+        SELECT *
+        FROM systemproperty
+        WHERE code = #{code}
+          AND status = #{status}
+    </select>
+
+    <select id="selectByValue" resultType="com.local.parking.test.system.property.SystemProperty">
+        SELECT *
+        FROM systemproperty
+        WHERE value = #{value}
+          AND status = 'active'
+    </select>
+
+    <select id="selectByValueAndStatus" resultType="com.local.parking.test.system.property.SystemProperty">
+        SELECT *
+        FROM systemproperty
+        WHERE value = #{value}
+          AND status = #{status}
+    </select>
+
+    <select id="selectById" resultType="com.local.parking.test.system.property.SystemProperty">
+        SELECT *
+        FROM systemproperty
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.local.parking.test.system.property.SystemProperty">
+        INSERT INTO systemproperty (description, code, value, status)
+        VALUES (#{description}, #{code}, #{value}, #{status})
+    </insert>
+
+    <select id="existsByCode" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM systemproperty
+            WHERE code = #{code}
+            AND status = 'active'
+       )
+    </select>
+
+    <select id="existsByValue" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM systemproperty
+            WHERE value = #{value}
+            AND status = 'active'
+       )
+    </select>
+
+</mapper>

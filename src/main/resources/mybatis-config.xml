@@ -1,0 +1,6 @@
+<configuration>
+    <mappers>
+        <mapper resource="com/local/parking/test/mappers/SystemPropertyMapper.xml" />
+        <mapper resource="com/local/parking/test/mappers/ParkingMapper.xml" />
+    </mappers>
+</configuration>

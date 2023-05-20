@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN'
+        'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+
+<mapper namespace="com.local.parking.test.mappers.ParkingMapper">
+
+    <select id="isParkingEmpty" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1
+            FROM parking
+            where status != 'active'
+            LIMIT 1)
+    </select>
+
+
+    <select id="existsByLocation" resultType="boolean">
+        SELECT CASE
+           WHEN (SELECT COUNT(*) FROM parking) = 0 THEN 0
+           ELSE (SELECT EXISTS (
+                                SELECT 1
+                                FROM parking
+                                WHERE location = #{location}
+                                  AND (status != 'completed' AND status != 'inactive')
+                            ))
+           END AS Location
+
+    </select>
+
+    <select id="isFullParking" resultType="boolean">
+        SELECT CASE
+           WHEN (SELECT COUNT(*) FROM parking) = 0 THEN 0
+           WHEN (SELECT COUNT(*) FROM systemproperty WHERE code = 'parking-slot') = 0 THEN 1
+           ELSE (
+               SELECT COUNT(*) = (SELECT COUNT(*) FROM systemproperty WHERE code = 'parking-slot')
+               FROM systemproperty sp
+               WHERE sp.code = 'parking-slot'
+                 AND NOT EXISTS (
+                       SELECT 1
+                       FROM parking p
+                       WHERE sp.value = CONCAT(p.location, ',', p.size)
+                         AND p.status = #{status}
+                   )
+           )
+           END AS isFull;
+    </select>
+
+    <insert id="insert" parameterType="com.local.parking.test.parking.ParkingSpace">
+        INSERT INTO parking (size, location, timein, isOccupied, status, entrypoint, vehicletype)
+        VALUES (#{size}, #{location}, #{timeIn},#{isOccupied},#{status},#{entryPoint},#{vehicleType})
+    </insert>
+
+    <select id="selectById" resultType="com.local.parking.test.parking.ParkingSpace">
+        SELECT *
+        FROM parking
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectActiveById" resultType="com.local.parking.test.parking.ParkingSpace">
+        SELECT *
+        FROM parking
+        WHERE id = #{id} AND status = 'active'
+    </select>
+
+    <update id="update" parameterType="com.local.parking.test.parking.ParkingSpace">
+        UPDATE parking
+        SET
+            location = #{parkingSpace.location},
+            size = #{parkingSpace.size},
+            timein = #{parkingSpace.timeIn},
+            timeout = #{parkingSpace.timeOut},
+            isOccupied = #{parkingSpace.isOccupied},
+            amount = #{parkingSpace.amount},
+            status = #{parkingSpace.status}
+        WHERE id = #{id}
+    </update>
+
+</mapper>
