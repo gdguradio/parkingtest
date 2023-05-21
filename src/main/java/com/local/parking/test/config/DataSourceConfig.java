@@ -18,7 +18,7 @@ public class DataSourceConfig {
     @Value("root")
     private String username;
 
-    @Value("123qweasdzxc")
+    @Value("password")
     private String password;
 
     @Bean

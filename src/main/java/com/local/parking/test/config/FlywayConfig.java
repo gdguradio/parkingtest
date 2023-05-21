@@ -44,7 +44,7 @@ public class FlywayConfig {
 //    public Flyway flyway() {
 //        Flyway flyway = Flyway.configure()
 //                .dataSource(flywayProperties.getUrl(), flywayProperties.getUser(), flywayProperties.getPassword())
-//                //.dataSource("jdbc:mysql://localhost:3306/parking", "root", "123qweasdzxc")
+//                //.dataSource("jdbc:mysql://localhost:3306/parking", "root", "password")
 //                .load();
 //        // Additional Flyway configuration if needed
 //        return flyway;
