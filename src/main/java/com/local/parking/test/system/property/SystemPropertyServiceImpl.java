@@ -25,11 +25,6 @@ public class SystemPropertyServiceImpl implements SystemPropertyService {
     }
 
     @Override
-    public List<SystemProperty> readByValue(SystemProperty systemProperty) {
-        return systemPropertyMapper.selectByCode(systemProperty.getValue());
-    }
-
-    @Override
     public String createParkingSlot(SystemProperty systemProperty) {
         return insertDB(systemProperty);
     }

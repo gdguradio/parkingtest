@@ -136,4 +136,9 @@ public class ParkingServiceImpl implements ParkingService {
     public ParkingSpace readById(long id) {
         return parkingMapper.selectById(id);
     }
+
+    @Override
+    public List<ParkingSpace> readParkedSlot() {
+        return parkingMapper.selectByParkedSlot();
+    }
 }

@@ -4,6 +4,7 @@ import com.local.parking.test.parking.ParkingSpace;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 @Mapper
@@ -17,13 +18,9 @@ public interface ParkingMapper {
 
     ParkingSpace selectById(@Param("id") long id);
 
-    ParkingSpace selectActiveById(@Param("id") long id);
-
     Optional<ParkingSpace> selectOptionalActiveById(@Param("id") long id);
 
     boolean isFullParking(@Param("status") String status);
 
-    ParkingSpace selectByEntryPoint(@Param("entryPoint") String entryPoint);
-
-    boolean isParkingEmpty();
+    List<ParkingSpace> selectByParkedSlot();
 }

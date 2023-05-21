@@ -8,7 +8,5 @@ public interface SystemPropertyService {
 
     List<SystemProperty> readByCode(SystemProperty systemProperty);
 
-    List<SystemProperty> readByValue(SystemProperty systemProperty);
-
     String createParkingSlot(SystemProperty systemProperty);
 }

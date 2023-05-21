@@ -9,6 +9,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/system-property")
+@CrossOrigin(origins = "http://localhost:4200")
 public class SystemPropertyController {
 
     private final SystemPropertyService systemPropertyService;

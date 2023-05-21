@@ -28,19 +28,23 @@
 
     <select id="isFullParking" resultType="boolean">
         SELECT CASE
-           WHEN (SELECT COUNT(*) FROM parking) = 0 THEN 0
-           WHEN (SELECT COUNT(*) FROM systemproperty WHERE code = 'parking-slot') = 0 THEN 1
+           WHEN (SELECT COUNT(*) FROM parking) = 0 THEN false
+           WHEN (SELECT COUNT(*) FROM systemproperty WHERE code = 'parking-slot') = 0 THEN true
            ELSE (
-               SELECT COUNT(*) = (SELECT COUNT(*) FROM systemproperty WHERE code = 'parking-slot')
-               FROM systemproperty sp
-               WHERE sp.code = 'parking-slot'
-                 AND NOT EXISTS (
-                       SELECT 1
-                       FROM parking p
-                       WHERE sp.value = CONCAT(p.location, ',', p.size)
-                         AND p.status = #{status}
-                   )
-           )
+                    SELECT COUNT(*) = (SELECT COUNT(*) FROM systemproperty WHERE code = 'parking-slot')
+                    FROM systemproperty sp
+                    WHERE sp.code = 'parking-slot'
+                      AND NOT EXISTS (
+                            SELECT 1
+                            FROM parking p
+                            WHERE sp.value = CONCAT(p.location, ',', p.size)
+                              AND p.status = #{status}
+                        )
+                ) AND EXISTS (
+                        SELECT 1
+                        FROM parking p
+                        WHERE p.status = #{status}
+                    )
            END AS isFull;
     </select>
 
@@ -53,6 +57,18 @@
         SELECT *
         FROM parking
         WHERE id = #{id}
+    </select>
+
+    <select id="selectOptionalActiveById" resultType="com.local.parking.test.parking.ParkingSpace">
+        SELECT *
+        FROM parking
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByParkedSlot" resultType="com.local.parking.test.parking.ParkingSpace">
+        SELECT *
+        FROM parking
+        WHERE status = 'active'
     </select>
 
     <select id="selectActiveById" resultType="com.local.parking.test.parking.ParkingSpace">
